@@ -46,62 +46,47 @@ import org.delcom.pam_p4_ifs23024.R
 import org.delcom.pam_p4_ifs23024.helper.ConstHelper
 import org.delcom.pam_p4_ifs23024.helper.RouteHelper
 import org.delcom.pam_p4_ifs23024.helper.ToolsHelper
-import org.delcom.pam_p4_ifs23024.network.plants.data.ResponsePlantData
+import org.delcom.pam_p4_ifs23024.network.celestialbodies.data.ResponseCelestialBodyData
 import org.delcom.pam_p4_ifs23024.ui.components.BottomNavComponent
 import org.delcom.pam_p4_ifs23024.ui.components.LoadingUI
 import org.delcom.pam_p4_ifs23024.ui.components.TopAppBarComponent
-import org.delcom.pam_p4_ifs23024.ui.viewmodels.PlantViewModel
-import org.delcom.pam_p4_ifs23024.ui.viewmodels.PlantsUIState
+import org.delcom.pam_p4_ifs23024.ui.viewmodels.CelestialBodiesUIState
+import org.delcom.pam_p4_ifs23024.ui.viewmodels.CelestialBodyViewModel
 
 @Composable
-fun PlantsScreen(
+fun CelestialBodiesScreen(
     navController: NavHostController,
-    plantViewModel: PlantViewModel
+    celestialBodyViewModel: CelestialBodyViewModel
 ) {
-    // Ambil data dari viewmodel
-    val uiStatePlant by plantViewModel.uiState.collectAsState()
+    val uiState by celestialBodyViewModel.uiState.collectAsState()
 
     var isLoading by remember { mutableStateOf(false) }
-    var searchQuery by remember {
-        mutableStateOf(TextFieldValue(""))
-    }
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+    var celestialBodies by remember { mutableStateOf<List<ResponseCelestialBodyData>>(emptyList()) }
 
-    // Muat data
-    var plants by remember { mutableStateOf<List<ResponsePlantData>>(emptyList()) }
-
-    fun fetchPlantsData(){
+    fun fetchData() {
         isLoading = true
-        plantViewModel.getAllPlants(searchQuery.text)
+        celestialBodyViewModel.getAllCelestialBodies(searchQuery.text)
     }
 
-    // Picu pengambilan data plants
-    LaunchedEffect(Unit) {
-        fetchPlantsData()
-    }
+    LaunchedEffect(Unit) { fetchData() }
 
-    // Picu ketika terjadi perubahan data plants
-    LaunchedEffect(uiStatePlant.plants){
-        if(uiStatePlant.plants !is PlantsUIState.Loading){
+    LaunchedEffect(uiState.celestialBodies) {
+        if (uiState.celestialBodies !is CelestialBodiesUIState.Loading) {
             isLoading = false
-
-            plants = if(uiStatePlant.plants is PlantsUIState.Success) {
-                (uiStatePlant.plants as PlantsUIState.Success).data
-            }else{
-                emptyList()
-            }
+            celestialBodies = if (uiState.celestialBodies is CelestialBodiesUIState.Success)
+                (uiState.celestialBodies as CelestialBodiesUIState.Success).data
+            else emptyList()
         }
     }
 
-    // Tampilkan halaman loading
-    if(isLoading){
-        LoadingUI()
-        return
-    }
+    if (isLoading) { LoadingUI(); return }
 
-    fun onOpen(plantId: String) {
+    fun onOpen(celestialBodyId: String) {
         RouteHelper.to(
             navController = navController,
-            destination = "plants/${plantId}"
+            destination = ConstHelper.RouteNames.CelestialBodyDetail.path
+                .replace("{celestialBodyId}", celestialBodyId)
         )
     }
 
@@ -110,66 +95,40 @@ fun PlantsScreen(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top App Bar
         TopAppBarComponent(
             navController = navController,
-            title = "Plants", showBackButton = false,
+            title = "Benda Langit",
+            showBackButton = false,
             withSearch = true,
             searchQuery = searchQuery,
-            onSearchQueryChange = { query ->
-                searchQuery = query
-            },
-            onSearchAction = {
-                fetchPlantsData()
-            }
+            onSearchQueryChange = { searchQuery = it },
+            onSearchAction = { fetchData() }
         )
-        // Content
-        Box(
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            PlantsUI(
-                plants = plants,
-                onOpen = ::onOpen
-            )
+        Box(modifier = Modifier.weight(1f)) {
+            CelestialBodiesListUI(celestialBodies = celestialBodies, onOpen = ::onOpen)
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-            {
-                // Floating Action Button
+            Box(modifier = Modifier.fillMaxSize()) {
                 FloatingActionButton(
                     onClick = {
-                        RouteHelper.to(
-                            navController,
-                            ConstHelper.RouteNames
-                                .PlantsAdd
-                                .path
-                        )
+                        RouteHelper.to(navController, ConstHelper.RouteNames.CelestialBodyAdd.path)
                     },
                     modifier = Modifier
-                        .align(Alignment.BottomEnd) // pojok kanan bawah
-                        .padding(16.dp) // jarak dari tepi
-                    ,
+                        .align(Alignment.BottomEnd)
+                        .padding(16.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Tambah Tumbuhan"
-                    )
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Tambah Benda Langit")
                 }
             }
         }
-        // Bottom Nav
         BottomNavComponent(navController = navController)
     }
 }
 
 @Composable
-fun PlantsUI(
-    plants: List<ResponsePlantData>,
+fun CelestialBodiesListUI(
+    celestialBodies: List<ResponseCelestialBodyData>,
     onOpen: (String) -> Unit
 ) {
     LazyColumn(
@@ -178,15 +137,12 @@ fun PlantsUI(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(plants) { plant ->
-            PlantItemUI(
-                plant,
-                onOpen
-            )
+        items(celestialBodies) { celestialBody ->
+            CelestialBodyItemUI(celestialBody, onOpen)
         }
     }
 
-    if(plants.isEmpty()){
+    if (celestialBodies.isEmpty()) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -196,7 +152,7 @@ fun PlantsUI(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Text(
-                text = "Tidak ada data!",
+                text = "Tidak ada data benda langit!",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -208,17 +164,15 @@ fun PlantsUI(
 }
 
 @Composable
-fun PlantItemUI(
-    plant: ResponsePlantData,
+fun CelestialBodyItemUI(
+    celestialBody: ResponseCelestialBodyData,
     onOpen: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {
-                onOpen(plant.id)
-            },
+            .clickable { onOpen(celestialBody.id) },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
@@ -229,8 +183,8 @@ fun PlantItemUI(
                 .padding(12.dp)
         ) {
             AsyncImage(
-                model = ToolsHelper.getPlantImageUrl(plant.id),
-                contentDescription = plant.nama,
+                model = ToolsHelper.getCelestialBodyImageUrl(celestialBody.id),
+                contentDescription = celestialBody.nama,
                 placeholder = painterResource(R.drawable.img_placeholder),
                 error = painterResource(R.drawable.img_placeholder),
                 modifier = Modifier
@@ -241,20 +195,15 @@ fun PlantItemUI(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = plant.nama,
+                    text = celestialBody.nama,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
-                    text = plant.deskripsi,
+                    text = celestialBody.deskripsi,
                     style = MaterialTheme.typography.bodyMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -266,11 +215,6 @@ fun PlantItemUI(
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
-fun PreviewPlantsUI() {
-//    DelcomTheme {
-//        PlantsUI(
-//            plants = DummyData.getPlantsData(),
-//            onOpen = {}
-//        )
-//    }
+fun PreviewCelestialBodiesListUI() {
+    // Preview placeholder
 }

@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Delcom Plants"
+rootProject.name = "Celestial App"
 include(":app")
  

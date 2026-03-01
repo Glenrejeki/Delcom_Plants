@@ -11,12 +11,12 @@ import org.delcom.pam_p4_ifs23024.BuildConfig
 import java.io.File
 
 object ToolsHelper {
-    fun getPlantImageUrl(plantId: String): String {
-        return "${BuildConfig.BASE_URL_PLANTS_API}plants/${plantId}/image"
+    fun getCelestialBodyImageUrl(celestialBodyId: String): String {
+        return "${BuildConfig.BASE_URL_CELESTIAL_API}celestial-bodies/${celestialBodyId}/image"
     }
 
     fun getProfilePhotoUrl(): String {
-        return "${BuildConfig.BASE_URL_PLANTS_API}profile/photo"
+        return "${BuildConfig.BASE_URL_CELESTIAL_API}profile/photo"
     }
 
     fun String.toRequestBodyText(): RequestBody {
@@ -29,10 +29,7 @@ object ToolsHelper {
         partName: String
     ): MultipartBody.Part {
         val file = uriToFile(context, uri)
-
-        val requestFile = file
-            .asRequestBody("image/*".toMediaTypeOrNull())
-
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         return MultipartBody.Part.createFormData(
             partName,
             file.name,
@@ -42,13 +39,11 @@ object ToolsHelper {
 
     fun uriToFile(context: Context, uri: Uri): File {
         val file = File.createTempFile("upload", ".tmp", context.cacheDir)
-
         context.contentResolver.openInputStream(uri)?.use { input ->
             file.outputStream().use { output ->
                 input.copyTo(output)
             }
         }
-
         return file
     }
 }

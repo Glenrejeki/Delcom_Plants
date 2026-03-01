@@ -1,56 +1,41 @@
 package org.delcom.pam_p4_ifs23024.helper
 
-import androidx.compose.material3.SnackbarDuration
+import android.util.Log
 import androidx.compose.material3.SnackbarHostState
-import com.google.gson.Gson
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.delcom.pam_p4_ifs23024.network.data.ResponseMessage
-import retrofit2.HttpException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 object SuspendHelper {
-    enum class SnackBarType(val title: String) {
-        ERROR(title = "error"),
-        SUCCESS(title = "success"),
-        INFO(title = "info"),
-        WARNING(title = "warning")
-    }
-
-    suspend fun showSnackBar(snackbarHost: SnackbarHostState, type: SnackBarType,  message: String){
-        coroutineScope {
-            launch {
-                snackbarHost.showSnackbar(
-                    message = "${type.title}|$message",
-                    actionLabel = "Close",
-                    duration = SnackbarDuration.Indefinite
-                )
-            }
-
-            launch {
-                delay(5_000)
-                snackbarHost.currentSnackbarData?.dismiss()
-            }
-        }
+    enum class SnackBarType {
+        SUCCESS, ERROR, INFO
     }
 
     suspend fun <T> safeApiCall(apiCall: suspend () -> ResponseMessage<T?>): ResponseMessage<T?> {
         return try {
             apiCall()
-        } catch (e: HttpException) {
-            val errorResponse = e.response()?.errorBody()?.string()
-            val jsonError = Gson().fromJson(errorResponse, ResponseMessage::class.java)
-
-            ResponseMessage(
-                status = "error",
-                message = jsonError?.message ?: "Server error"
-            )
+        } catch (e: UnknownHostException) {
+            Log.e("SuspendHelper", "No internet connection: ${e.message}")
+            ResponseMessage("error", "Koneksi internet tidak tersedia", null)
+        } catch (e: SocketTimeoutException) {
+            Log.e("SuspendHelper", "Connection timeout: ${e.message}")
+            ResponseMessage("error", "Koneksi terputus (timeout)", null)
         } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseMessage(
-                status = "error",
-                message = e.message ?: "Unknown error"
-            )
+            Log.e("SuspendHelper", "API call failed: ${e.message}", e)
+            ResponseMessage("error", e.message ?: "Terjadi kesalahan tidak terduga", null)
         }
+    }
+
+    suspend fun showSnackBar(
+        snackbarHostState: SnackbarHostState,
+        type: SnackBarType,
+        message: String
+    ) {
+        val prefix = when (type) {
+            SnackBarType.SUCCESS -> "✅ "
+            SnackBarType.ERROR -> "❌ "
+            SnackBarType.INFO -> "ℹ️ "
+        }
+        snackbarHostState.showSnackbar(message = "$prefix$message")
     }
 }

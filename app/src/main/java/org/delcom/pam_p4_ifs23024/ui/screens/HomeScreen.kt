@@ -30,25 +30,17 @@ fun HomeScreen(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Top App Bar
-        TopAppBarComponent(navController = navController, title = "Home", false)
-        // Content
-        Box(
-            modifier = Modifier
-                .weight(1f)
-        ) {
+        TopAppBarComponent(navController = navController, title = "Home", showBackButton = false)
+        Box(modifier = Modifier.weight(1f)) {
             HomeUI()
         }
-        // Bottom Nav
         BottomNavComponent(navController = navController)
     }
 }
 
 @Composable
-fun HomeUI(){
-    Column(
-        modifier = Modifier.padding(top = 16.dp)
-    ) {
+fun HomeUI() {
+    Column(modifier = Modifier.padding(top = 16.dp)) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,7 +50,7 @@ fun HomeUI(){
         ) {
             Text(
                 style = MaterialTheme.typography.headlineMedium,
-                text = "\uD83C\uDF33 Delcom Plants \uD83C\uDF33",
+                text = "\uD83C\uDF0C Angkasa & Tata Surya \uD83C\uDF0C",
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -71,58 +63,54 @@ fun HomeUI(){
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            // Emot 1
+            // Planet
             Card(
-                modifier = Modifier
-                    .padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineLarge,
-                    text = "\uD83C\uDF31",
+                    text = "\uD83E\uFA90", // Ringed planet
                     modifier = Modifier.padding(16.dp)
                 )
             }
 
-            // Emot 2
+            // Star
             Card(
-                modifier = Modifier
-                    .padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineLarge,
-                    text = "\uD83C\uDF3F",
+                    text = "\u2B50",
                     modifier = Modifier.padding(16.dp)
                 )
             }
 
-            // Emot 3
+            // Moon
             Card(
-                modifier = Modifier
-                    .padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineLarge,
-                    text = "\uD83C\uDF40",
+                    text = "\uD83C\uDF19",
                     modifier = Modifier.padding(16.dp)
                 )
             }
 
-            // Emot 4
+            // Comet
             Card(
-                modifier = Modifier
-                    .padding(8.dp),
+                modifier = Modifier.padding(8.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Text(
                     style = MaterialTheme.typography.headlineLarge,
-                    text = "\uD83E\uDD6C",
+                    text = "\u2604\uFE0F",
                     modifier = Modifier.padding(16.dp)
                 )
             }
@@ -132,7 +120,7 @@ fun HomeUI(){
 
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
-fun PreviewHomeUI(){
+fun PreviewHomeUI() {
     DelcomTheme {
         HomeUI()
     }

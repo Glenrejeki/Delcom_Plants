@@ -10,18 +10,18 @@ plugins {
 
 android {
     namespace = "org.delcom.pam_p4_ifs23024"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "org.delcom.pam_p4_ifs23024"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "BASE_URL_PLANTS_API", "\"https://pam-2026-p4-ifs18005-be.delcom.org:8080/\"")
+        buildConfigField("String", "BASE_URL_CELESTIAL_API", "\"https://103.167.217.188:8080/\"")
     }
 
     buildTypes {

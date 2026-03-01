@@ -18,27 +18,28 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.delcom.pam_p4_ifs23024.helper.ConstHelper
 import org.delcom.pam_p4_ifs23024.ui.components.CustomSnackbar
+import org.delcom.pam_p4_ifs23024.ui.screens.CelestialBodiesScreen
+import org.delcom.pam_p4_ifs23024.ui.screens.CelestialBodyAddScreen
+import org.delcom.pam_p4_ifs23024.ui.screens.CelestialBodyDetailScreen
+import org.delcom.pam_p4_ifs23024.ui.screens.CelestialBodyEditScreen
 import org.delcom.pam_p4_ifs23024.ui.screens.HomeScreen
-import org.delcom.pam_p4_ifs23024.ui.screens.PlantsAddScreen
-import org.delcom.pam_p4_ifs23024.ui.screens.PlantsDetailScreen
-import org.delcom.pam_p4_ifs23024.ui.screens.PlantsEditScreen
-import org.delcom.pam_p4_ifs23024.ui.screens.PlantsScreen
 import org.delcom.pam_p4_ifs23024.ui.screens.ProfileScreen
-import org.delcom.pam_p4_ifs23024.ui.viewmodels.PlantViewModel
+import org.delcom.pam_p4_ifs23024.ui.viewmodels.CelestialBodyViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun UIApp(
     navController: NavHostController = rememberNavController(),
-    plantViewModel: PlantViewModel
+    celestialBodyViewModel: CelestialBodyViewModel
 ) {
-    // Inisialisasi SnackbarHostState
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState){ snackbarData ->
-            CustomSnackbar(snackbarData, onDismiss = { snackbarHostState.currentSnackbarData?.dismiss() })
-        } },
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { snackbarData ->
+                CustomSnackbar(snackbarData, onDismiss = { snackbarHostState.currentSnackbarData?.dismiss() })
+            }
+        },
     ) { _ ->
         NavHost(
             navController = navController,
@@ -46,82 +47,64 @@ fun UIApp(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color(0xFFF7F8FA))
-
         ) {
             // Home
-            composable(
-                route = ConstHelper.RouteNames.Home.path,
-            ) { _ ->
-                HomeScreen(
-                    navController = navController,
-                )
+            composable(route = ConstHelper.RouteNames.Home.path) {
+                HomeScreen(navController = navController)
             }
 
             // Profile
-            composable(
-                route = ConstHelper.RouteNames.Profile.path,
-            ) { _ ->
+            composable(route = ConstHelper.RouteNames.Profile.path) {
                 ProfileScreen(
                     navController = navController,
-                    plantViewModel = plantViewModel
+                    celestialBodyViewModel = celestialBodyViewModel
                 )
             }
 
-            // Plants
-            composable(
-                route = ConstHelper.RouteNames.Plants.path,
-            ) { _ ->
-                PlantsScreen(
+            // Celestial Bodies List
+            composable(route = ConstHelper.RouteNames.CelestialBodies.path) {
+                CelestialBodiesScreen(
                     navController = navController,
-                    plantViewModel = plantViewModel
+                    celestialBodyViewModel = celestialBodyViewModel
                 )
             }
 
-            // Plants Add
-            composable(
-                route = ConstHelper.RouteNames.PlantsAdd.path,
-            ) { _ ->
-                PlantsAddScreen(
+            // Celestial Body Add
+            composable(route = ConstHelper.RouteNames.CelestialBodyAdd.path) {
+                CelestialBodyAddScreen(
                     navController = navController,
                     snackbarHost = snackbarHostState,
-                    plantViewModel = plantViewModel
+                    celestialBodyViewModel = celestialBodyViewModel
                 )
             }
 
-            // Plants Detail
+            // Celestial Body Detail
             composable(
-                route = ConstHelper.RouteNames.PlantsDetail.path,
-                arguments = listOf(
-                    navArgument("plantId") { type = NavType.StringType },
-                )
+                route = ConstHelper.RouteNames.CelestialBodyDetail.path,
+                arguments = listOf(navArgument("celestialBodyId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val plantId = backStackEntry.arguments?.getString("plantId") ?: ""
-
-                PlantsDetailScreen(
+                val celestialBodyId = backStackEntry.arguments?.getString("celestialBodyId") ?: ""
+                CelestialBodyDetailScreen(
                     navController = navController,
                     snackbarHost = snackbarHostState,
-                    plantViewModel = plantViewModel,
-                    plantId = plantId
+                    celestialBodyViewModel = celestialBodyViewModel,
+                    celestialBodyId = celestialBodyId
                 )
             }
 
-            // Plants Edit
+            // Celestial Body Edit
             composable(
-                route = ConstHelper.RouteNames.PlantsEdit.path,
-                arguments = listOf(
-                    navArgument("plantId") { type = NavType.StringType },
-                )
+                route = ConstHelper.RouteNames.CelestialBodyEdit.path,
+                arguments = listOf(navArgument("celestialBodyId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val plantId = backStackEntry.arguments?.getString("plantId") ?: ""
-
-                PlantsEditScreen(
+                val celestialBodyId = backStackEntry.arguments?.getString("celestialBodyId") ?: ""
+                CelestialBodyEditScreen(
                     navController = navController,
                     snackbarHost = snackbarHostState,
-                    plantViewModel = plantViewModel,
-                    plantId = plantId
+                    celestialBodyViewModel = celestialBodyViewModel,
+                    celestialBodyId = celestialBodyId
                 )
             }
         }
     }
-
 }

@@ -16,11 +16,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Nature
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Nature
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Stars
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,7 +53,7 @@ sealed class MenuBottomNav(
     val iconActive: ImageVector,
 ) {
     object Home : MenuBottomNav(ConstHelper.RouteNames.Home.path, "Home", Icons.Outlined.Home, Icons.Filled.Home)
-    object Plants : MenuBottomNav(ConstHelper.RouteNames.Plants.path, "Plants", Icons.Outlined.Nature, Icons.Filled.Nature)
+    object CelestialBodies : MenuBottomNav(ConstHelper.RouteNames.CelestialBodies.path, "Angkasa", Icons.Outlined.Stars, Icons.Filled.Stars)
     object Profile : MenuBottomNav(ConstHelper.RouteNames.Profile.path, "Profile", Icons.Outlined.Person, Icons.Filled.Person)
 }
 
@@ -61,7 +61,7 @@ sealed class MenuBottomNav(
 fun BottomNavComponent(navController: NavHostController) {
     val items: List<MenuBottomNav> = listOf(
         MenuBottomNav.Home,
-        MenuBottomNav.Plants,
+        MenuBottomNav.CelestialBodies,
         MenuBottomNav.Profile,
     )
 
@@ -101,7 +101,6 @@ fun BottomNavComponent(navController: NavHostController) {
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            // Icon dengan efek khusus
                             NavigationIcon(
                                 selected = selected,
                                 screen = screen,
@@ -118,7 +117,7 @@ fun BottomNavComponent(navController: NavHostController) {
                         selectedTextColor = MaterialTheme.colorScheme.primary,
                         unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        indicatorColor = Color.Transparent // Remove default indicator
+                        indicatorColor = Color.Transparent
                     )
                 )
             }
@@ -137,15 +136,12 @@ fun NavigationIcon(
         modifier = Modifier.size(48.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Background untuk icon yang aktif
         if (selected) {
             Box(
                 modifier = Modifier
                     .matchParentSize()
                     .clip(RoundedCornerShape(15.dp))
-                    .background(
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)
-                    )
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f))
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
@@ -154,7 +150,6 @@ fun NavigationIcon(
             )
         }
 
-        // Icon dengan badge jika ada notifikasi
         BadgedBox(
             badge = {
                 if (hasNotification && !selected) {
@@ -186,9 +181,7 @@ fun PreviewBottomNavComponent() {
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier
-            ) {
+            Column {
                 BottomNavComponent(
                     navController = NavHostController(LocalContext.current)
                 )
@@ -205,9 +198,7 @@ fun PreviewBottomNavComponentDark() {
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier
-            ) {
+            Column {
                 BottomNavComponent(
                     navController = NavHostController(LocalContext.current)
                 )

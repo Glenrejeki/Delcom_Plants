@@ -5,11 +5,9 @@ class ConstHelper {
     enum class RouteNames(val path: String) {
         Home(path = "home"),
         Profile(path = "profile"),
-        Plants(path = "plants"),
-        PlantsAdd(path = "plants/add"),
-
-        PlantsDetail(path = "plants/{plantId}"),
-        PlantsEdit(path = "plants/{plantId}/edit"),
-
+        CelestialBodies(path = "celestial-bodies"),
+        CelestialBodyAdd(path = "celestial-bodies/add"),
+        CelestialBodyDetail(path = "celestial-bodies/{celestialBodyId}"),
+        CelestialBodyEdit(path = "celestial-bodies/{celestialBodyId}/edit"),
     }
 }

@@ -1,4 +1,4 @@
-package org.delcom.pam_p4_ifs23024.network.plants.data
+package org.delcom.pam_p4_ifs23024.network.celestialbodies.data
 
 import kotlinx.serialization.Serializable
 
